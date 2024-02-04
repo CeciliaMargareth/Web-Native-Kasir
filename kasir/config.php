@@ -12,51 +12,48 @@ if ($conn->connect_error) {
     die("Koneksi database gagal: " . $conn->connect_error);
 }
 
-function tambahKategori($nama_kategori) {
+
+// --Bagian Produk Start--
+
+// Fungsi Tambah Produk
+function tambahProduk($nama_produk, $merk) {
     global $conn;
 
-    $query = "INSERT INTO kategori (nama_kategori) VALUES ('$nama_kategori')";
+    $stmt = $conn->prepare("INSERT INTO produk (nama_produk, merk) VALUES (?, ?)");
+    $stmt->bind_param("ss", $nama_produk, $merk);
+
+    return $stmt->execute();
+}
+
+// Fungsi Ambil Data Produk
+function ambilProduk() {
+    global $conn;
+
+    $query = "SELECT * FROM produk";
     $result = $conn->query($query);
 
     return $result;
 }
 
-function ambilKategori() {
+// Fungsi Edit Produk
+function editProduk($id_produk, $nama_produk, $merk, $kategori_produk) {
     global $conn;
 
-    $query = "SELECT * FROM kategori";
-    $result = $conn->query($query);
+    $stmt = $conn->prepare("UPDATE produk SET nama_produk = ?, merk = ?, kategori_produk = ? WHERE id_produk = ?");
+    $stmt->bind_param("sssi", $nama_produk, $merk, $kategori_produk, $id_produk);
 
-    return $result;
+    return $stmt->execute();
 }
 
-function ambilDetailKategori($id_kategori) {
+// Fungsi Hapus Produk
+function hapusProduk($id_produk) {
     global $conn;
 
-    $query = "SELECT * FROM kategori WHERE id_kategori = '$id_kategori'";
-    $result = $conn->query($query);
+    $stmt = $conn->prepare("DELETE FROM produk WHERE id_produk = ?");
+    $stmt->bind_param("i", $id_produk);
 
-    return $result->fetch_assoc();
+    return $stmt->execute();
 }
 
-function editKategori($id_kategori, $nama_kategori) {
-    global $conn;
-
-    $query = "UPDATE kategori SET nama_kategori = '$nama_kategori' WHERE id_kategori = '$id_kategori'";
-    $result = $conn->query($query);
-
-    return $result;
-}
-
-function hapusKategori($id_kategori) {
-    global $conn;
-
-    $query = "DELETE FROM kategori WHERE id_kategori = '$id_kategori'";
-    $result = $conn->query($query);
-
-    return $result;
-}
-
-
-
+// --Bagian Produk End--
 ?>

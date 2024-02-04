@@ -1,45 +1,62 @@
 <?php
 require_once '../config.php';
 
-// Tambah Kategori
-if (isset($_POST['tambah'])) {
-    $nama_kategori = $_POST['nama_kategori'];
+// Fungsi CRUD untuk produk
+function tambahProduk($nama_produk, $merk) {
+    global $conn;
+    $sql = "INSERT INTO produk (nama_produk, merk) VALUES ('$nama_produk', '$merk')";
+    return $conn->query($sql);
+}
+
+function ambilProduk() {
+    global $conn;
+    $sql = "SELECT * FROM produk";
+    return $conn->query($sql);
+}
+
+
+// Tambah Produk
+if (isset($_POST['tambah_produk'])) {
+    $nama_produk = $_POST['nama_produk'];
+    $merk = $_POST['merk'];
     
-    if (tambahKategori($nama_kategori)) {
-        header("Location: kategori.php");
+    if (tambahProduk($nama_produk, $merk)) {
+        header("Location: produk.php");
         exit();
     } else {
-        echo "Gagal menambah kategori.";
+        echo "Gagal menambah produk.";
     }
 }
 
-// Edit Kategori
-if (isset($_POST['edit'])) {
-    $id_kategori = $_POST['id_kategori'];
-    $nama_kategori = $_POST['nama_kategori'];
+// Edit Produk
+if (isset($_POST['edit_produk'])) {
+    $id_produk = $_POST['id_produk'];
+    $nama_produk = $_POST['nama_produk'];
+    $merk = $_POST['merk'];
 
-    if (editKategori($id_kategori, $nama_kategori)) {
-        header("Location: kategori.php");
+    $sql = "UPDATE produk SET nama_produk='$nama_produk', merk='$merk' WHERE id_produk=$id_produk";
+    if ($conn->query($sql)) {
+        header("Location: produk.php");
         exit();
     } else {
-        echo "Gagal mengedit kategori.";
+        echo "Gagal mengedit produk.";
     }
 }
 
-// Hapus Kategori
-if (isset($_GET['hapus'])) {
-    $id_kategori = $_GET['hapus'];
+// Hapus Produk
+if (isset($_GET['hapus_produk'])) {
+    $id_produk = $_GET['hapus_produk'];
 
-    if (hapusKategori($id_kategori)) {
-        header("Location: kategori.php");
+    if ($conn->query("DELETE FROM produk WHERE id_produk=$id_produk")) {
+        header("Location: produk.php");
         exit();
     } else {
-        echo "Gagal menghapus kategori.";
+        echo "Gagal menghapus produk.";
     }
 }
 
-// Ambil data kategori
-$result = ambilKategori();
+// Ambil data produk dan kategori
+$produk_result = ambilProduk();
 ?>
 
 <!DOCTYPE html>
@@ -156,56 +173,45 @@ $result = ambilKategori();
             
             <div class="page-heading">
         <div class="page-title">
-            <div class="row">
-                <div class="col-12 col-md-6 mt-5 order-md-1 order-last">
-                    <h3>Data-data Kategori Produk</h3>
-                </div>
-                <div class="col-12 col-md-6 order-md-2 order-first">
-                    <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
-                        <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="index.html">Dashboard</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">Kategori</li>
-                        </ol>
-                    </nav>
-                </div>
-            </div>
+            <!-- ... -->
             <div class="form-group">
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#inlineForm">Tambah Data</button>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tambahProdukModal">Tambah Data</button>
 
-                <div class="modal fade text-left" id="inlineForm" tabindex="-1" role="dialog"
-                    aria-labelledby="myModalLabel33" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable"
-                        role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h4 class="modal-title" id="myModalLabel33">Tambah Data Kategori Produk</h4>
-                                <button type="button" class="close" data-bs-dismiss="modal"
-                                    aria-label="Close">
-                                    <i data-feather="x"></i>
-                                </button>
+                <!-- Tambah Produk Modal -->
+                <div class="modal fade text-left" id="tambahProdukModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel33" aria-hidden="true">
+                    <!-- ... -->
+                    <form method="post" action="produk.php">
+                        <div class="modal-body">
+                            <label for="nama_produk">Nama Produk</label>
+                            <div class="form-group">
+                                <input id="nama_produk" type="text" placeholder="Nama Produk..." class="form-control" name="nama_produk">
                             </div>
-                            <form method="post" action="kategori.php">
-                                <div class="modal-body">
-                                    <label for="nama_kategori">Nama Kategori Produk</label>
-                                    <div class="form-group">
-                                        <input id="nama_kategori" type="text" placeholder="Nama..."
-                                            class="form-control" name="nama_kategori">
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-light-secondary"
-                                        data-bs-dismiss="modal">
-                                        <i class="bx bx-x d-block d-sm-none"></i>
-                                        <span class="d-none d-sm-block">Close</span>
-                                    </button>
-                                    <button type="submit" name="tambah" class="btn btn-primary ms-1">
-                                        <i class="bx bx-check d-block d-sm-none"></i>
-                                        <span class="d-none d-sm-block">Submit</span>
-                                    </button>
-                                </div>
-                            </form>
+                            <label for="merk">Merk</label>
+                            <div class="form-group">
+                                <input id="merk" type="text" placeholder="Merk..." class="form-control" name="merk">
+                            </div>
+                            <label for="kategori_produk">Kategori Produk</label>
+                            <div class="form-group">
+                                <select id="kategori_produk" class="form-select" name="kategori_produk">
+                                    <?php
+                                    while ($row = $kategori_result->fetch_assoc()) {
+                                        echo "<option value='{$row['nama_kategori']}'>{$row['nama_kategori']}</option>";
+                                    }
+                                    ?>
+                                </select>
+                            </div>
                         </div>
-                    </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-light-secondary" data-bs-dismiss="modal">
+                                <i class="bx bx-x d-block d-sm-none"></i>
+                                <span class="d-none d-sm-block">Close</span>
+                            </button>
+                            <button type="submit" name="tambah_produk" class="btn btn-primary ms-1">
+                                <i class="bx bx-check d-block d-sm-none"></i>
+                                <span class="d-none d-sm-block">Submit</span>
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -214,55 +220,64 @@ $result = ambilKategori();
             <div class="card">
                 <div class="card-header">
                     <h5 class="card-title">
-                        Kategori
+                        Produk
                     </h5>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive datatable-minimal">
-                        <table class="table" id="table2">
+                        <table class="table" id="table_produk">
                             <thead>
                                 <tr>
-                                    <th>ID Kategori</th>
-                                    <th>Nama Kategori</th>
+                                    <th>ID Produk</th>
+                                    <th>Nama Produk</th>
+                                    <th>Merk</th>
+                                    <th>Kategori Produk</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <?php
-                                while ($row = $result->fetch_assoc()) {
+                                while ($row = $produk_result->fetch_assoc()) {
                                     echo "<tr>";
-                                    echo "<td>{$row['id_kategori']}</td>";
-                                    echo "<td>{$row['nama_kategori']}</td>";
+                                    echo "<td>{$row['id_produk']}</td>";
+                                    echo "<td>{$row['nama_produk']}</td>";
+                                    echo "<td>{$row['merk']}</td>";
                                     echo "<td>
-                                            <a href='kategori.php?hapus={$row['id_kategori']}' class='btn btn-danger me-1 mb-1'>Hapus</a>
-                                            <button type='button' class='btn btn-warning me-1 mb-1' data-bs-toggle='modal' data-bs-target='#editModal{$row['id_kategori']}'>Edit</button>
-                                          </td>";
+                                            <a href='produk.php?hapus_produk={$row['id_produk']}' class='btn btn-danger me-1 mb-1'>Hapus</a>
+                                            <button type='button' class='btn btn-warning me-1 mb-1' data-bs-toggle='modal' data-bs-target='#editProdukModal{$row['id_produk']}'>
+                                                Edit
+                                            </button>
+                                        </td>";
                                     echo "</tr>";
 
-                                    // Modal Edit
-                                    echo "<div class='modal fade text-left' id='editModal{$row['id_kategori']}' tabindex='-1' role='dialog' aria-labelledby='myModalLabel{$row['id_kategori']}' aria-hidden='true'>
+                                    // Modal Edit Produk
+                                    echo "<div class='modal fade text-left' id='editProdukModal{$row['id_produk']}' tabindex='-1' role='dialog' aria-labelledby='myModalLabel{$row['id_produk']}' aria-hidden='true'>
                                             <div class='modal-dialog modal-dialog-centered modal-dialog-scrollable' role='document'>
                                                 <div class='modal-content'>
                                                     <div class='modal-header'>
-                                                        <h4 class='modal-title' id='myModalLabel{$row['id_kategori']}'>Edit Data Kategori Produk</h4>
+                                                        <h4 class='modal-title' id='myModalLabel{$row['id_produk']}'>Edit Data Produk</h4>
                                                         <button type='button' class='close' data-bs-dismiss='modal' aria-label='Close'>
                                                             <i data-feather='x'></i>
                                                         </button>
                                                     </div>
-                                                    <form method='post' action='kategori.php'>
+                                                    <form method='post' action='produk.php'>
                                                         <div class='modal-body'>
-                                                            <input type='hidden' name='id_kategori' value='{$row['id_kategori']}'>
-                                                            <label for='nama_kategori'>Nama Kategori Produk</label>
+                                                            <input type='hidden' name='id_produk' value='{$row['id_produk']}'>
+                                                            <label for='nama_produk'>Nama Produk</label>
                                                             <div class='form-group'>
-                                                                <input id='nama_kategori' type='text' placeholder='Nama...' class='form-control' name='nama_kategori' value='{$row['nama_kategori']}'>
+                                                                <input id='nama_produk' type='text' placeholder='Nama Produk...' class='form-control' name='nama_produk' value='{$row['nama_produk']}'>
                                                             </div>
+                                                            <label for='merk'>Merk</label>
+                                                            <div class='form-group'>
+                                                                <input id='merk' type='text' placeholder='Merk...' class='form-control' name='merk' value='{$row['merk']}'>
+                                                            </div>                                                
                                                         </div>
                                                         <div class='modal-footer'>
                                                             <button type='button' class='btn btn-light-secondary' data-bs-dismiss='modal'>
                                                                 <i class='bx bx-x d-block d-sm-none'></i>
                                                                 <span class='d-none d-sm-block'>Close</span>
                                                             </button>
-                                                            <button type='submit' name='edit' class='btn btn-primary ms-1'>
+                                                            <button type='submit' name='edit_produk' class='btn btn-primary ms-1'>
                                                                 <i class='bx bx-check d-block d-sm-none'></i>
                                                                 <span class='d-none d-sm-block'>Submit</span>
                                                             </button>
@@ -280,7 +295,6 @@ $result = ambilKategori();
             </div>
         </section>
     </div>
-
 
     <!-- Minimal jQuery Datatable end -->
 </div>
