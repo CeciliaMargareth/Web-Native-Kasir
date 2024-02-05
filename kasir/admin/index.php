@@ -70,12 +70,6 @@
                     <span>Dashboard</span>
                 </a>
             </li>
-            <li class="sidebar-item">
-                <a href="kategori.php" class='sidebar-link'>
-                    <i class="bi bi-layers-fill"></i>
-                    <span>Kategori</span>
-                </a>
-            </li>
             <li class="sidebar-item ">
                 <a href="produk.php" class='sidebar-link'>
                     <i class="bi bi-box"></i>

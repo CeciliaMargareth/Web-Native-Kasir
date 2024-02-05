@@ -16,11 +16,11 @@ if ($conn->connect_error) {
 // --Bagian Produk Start--
 
 // Fungsi Tambah Produk
-function tambahProduk($nama_produk, $merk) {
+function tambahProduk($nama_produk, $merk, $harga) {
     global $conn;
 
-    $stmt = $conn->prepare("INSERT INTO produk (nama_produk, merk) VALUES (?, ?)");
-    $stmt->bind_param("ss", $nama_produk, $merk);
+    $stmt = $conn->prepare("INSERT INTO produk (nama_produk, merk, harga) VALUES (?, ?, ?)");
+    $stmt->bind_param("sss", $nama_produk, $merk, $harga);
 
     return $stmt->execute();
 }
@@ -36,11 +36,11 @@ function ambilProduk() {
 }
 
 // Fungsi Edit Produk
-function editProduk($id_produk, $nama_produk, $merk, $kategori_produk) {
+function editProduk($id_produk, $nama_produk, $merk, $harga) {
     global $conn;
 
-    $stmt = $conn->prepare("UPDATE produk SET nama_produk = ?, merk = ?, kategori_produk = ? WHERE id_produk = ?");
-    $stmt->bind_param("sssi", $nama_produk, $merk, $kategori_produk, $id_produk);
+    $stmt = $conn->prepare("UPDATE produk SET nama_produk = ?, merk = ?, harga = ? WHERE id_produk = ?");
+    $stmt->bind_param("sssi", $nama_produk, $merk, $harga, $id_produk);
 
     return $stmt->execute();
 }
@@ -56,4 +56,18 @@ function hapusProduk($id_produk) {
 }
 
 // --Bagian Produk End--
+
+function tambahTransaksi($id_pesanan, $total_item, $total_harga, $diskon, $bayar, $diterima, $id_user) {
+    // Lakukan koneksi ke database sesuai dengan konfigurasi Anda
+    $conn = mysqli_connect("localhost", "root", "", "kasir");
+    
+    // Insert data ke tabel penjualan_detail
+    $query_detail = "INSERT INTO penjualan (id_pesanan, total_item, total_harga, diterima, id_user)
+                     VALUES ('$id_pesanan', '$total_item', '$total_harga', '$diterima', '$id_user')";
+    mysqli_query($conn, $query_detail);
+    
+    // Tutup koneksi
+    mysqli_close($conn);
+}
+
 ?>
